@@ -1,26 +1,280 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-primary: #FFB7B2;
+  --color-secondary: #FFDAC1;
+  --color-accent: #E2F0CB;
+  --color-background: #FFF9F0;
+  --color-text: #4A4A4A;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-gray-10: #18191b;
+  --color-gray-20: #303236;
+  --color-gray-30: #494b50;
+  --color-gray-40: #61646b;
+  --color-gray-50: #7e828b;
+  --color-gray-60: #9699a0;
+  --color-gray-70: #afb1b6;
+  --color-gray-80: #c9cbcf;
+  --color-gray-90: #e4e5e7;
+  --color-gray-95: #f2f2f3;
+  --color-gray-98: #fafafa;
+  
+  --font-nunito: var(--font-nunito);
+  
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-nunito), sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-background);
+}
+
+/* Custom Utilities that might be reused */
+@layer utilities {
+  .btn {
+    @apply inline-block px-6 py-3 rounded-full font-bold transition-all duration-200 cursor-pointer border-none;
+  }
+  
+  .btn:hover {
+    @apply -translate-y-0.5 shadow-lg;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white;
+  }
+}
+
+
+@layer utilities {
+  .t-4xl-eb {
+    font-family: Pretendard;
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 68px;
+  }
+
+  .t-4xl-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 68px;
+  }
+
+  .t-4xl-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 48px;
+    line-height: 68px;
+  }
+
+  .t-4xl-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 68px;
+  }
+
+  .t-4xl-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 68px;
+  }
+
+  .t-3xl-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .t-3xl-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .t-3xl-l {
+    font-family: Pretendard;
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .t-2xl-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .t-2xl-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .t-2xl-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .t-2xl-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .t-xl-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .t-xl-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .t-xl-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .t-l-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .t-l-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .t-l-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .t-l-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .t-b-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .t-b-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .t-b-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .t-b-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .t-m-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .t-m-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .t-m-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .t-m-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .t-s-b {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .t-s-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .t-s-m {
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .t-s-r {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .t-xs-sb {
+    font-family: Pretendard;
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 16px;
+  }
+
+  .t-2xs-xb {
+    font-family: Pretendard;
+    font-weight: 800;
+    font-size: 8px;
+    line-height: 14px;
+  }
 }
