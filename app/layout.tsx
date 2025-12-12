@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
 import "./globals.css";
-
-const nunito = Nunito({
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  variable: "--font-nunito",
-});
 
 export const metadata: Metadata = {
   title: "BookLog - 귀여운 독서 기록장",
@@ -20,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={nunito.className}>
+      <body>
         {children}
       </body>
     </html>
