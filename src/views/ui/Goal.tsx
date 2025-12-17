@@ -21,7 +21,6 @@ export default function GoalView() {
 
   // Redirect to login if not authenticated after loading
   if (!userLoading && !isAuthenticated) {
-    console.warn('⚠️ [GOAL] User not authenticated, redirecting to login');
     router.push('/login');
     return null;
   }
@@ -35,7 +34,6 @@ export default function GoalView() {
     e.preventDefault();
     
     if (!userId) {
-      console.error('❌ [GOAL] No userId available');
       alert('로그인이 필요합니다.');
       router.push('/login');
       return;
@@ -70,15 +68,6 @@ export default function GoalView() {
           endDate.setFullYear(endDate.getFullYear() + 1);
       }
 
-      console.log('🎯 [GOAL] Creating goal with data:', {
-        userId,
-        period: formData.period,
-        targetBooks: formData.targetBooks,
-        targetPages: formData.targetPages,
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
-      });
-
       const createdGoal = await readingGoalsApi.create({
         userId,
         period: formData.period,
@@ -88,16 +77,14 @@ export default function GoalView() {
         endDate: endDate.toISOString().split('T')[0],
       });
 
-      console.log('✅ [GOAL] Goal created successfully:', createdGoal);
       setSuccess(true);
       
       setTimeout(() => {
-        console.log('🏠 [GOAL] Navigating to home...');
         router.push('/');
         router.refresh();
       }, 1500);
     } catch (error) {
-      console.error('❌ [GOAL] Failed to create goal:', error);
+      console.error('Failed to create goal:', error);
       alert('목표 생성에 실패했습니다.');
     } finally {
       setLoading(false);

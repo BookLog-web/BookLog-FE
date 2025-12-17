@@ -17,11 +17,9 @@ export default function AddView() {
   const [addingBook, setAddingBook] = useState<string | null>(null);
 
   const handleSearch = async (query: string) => {
-    console.log('🔍 [ADD] handleSearch called with:', query);
     setSearchQuery(query);
     
     if (!query.trim()) {
-      console.log('🔍 [ADD] Empty query, clearing results');
       setSearchResults([]);
       setHasSearched(false);
       return;
@@ -30,20 +28,16 @@ export default function AddView() {
     try {
       setSearching(true);
       setHasSearched(true);
-      console.log('🔍 [ADD] Calling booksApi.searchNaver...');
       const result = await booksApi.searchNaver(query, 20, 1);
-      console.log('✅ [ADD] Search results received:', result);
       setSearchResults(result.items);
     } catch (error) {
-      console.error('❌ [ADD] Failed to search books:', error);
+      console.error('Failed to search books:', error);
     } finally {
       setSearching(false);
     }
   };
 
   const handleAddBook = async (book: NaverBook) => {
-    console.log('📚 [ADD] Adding book:', book.title);
-    console.log('📚 [ADD] User ID:', userId);
     setAddingBook(book.isbn);
 
     try {
@@ -54,10 +48,9 @@ export default function AddView() {
           const allBooks = await booksApi.getAll({ search: book.isbn, limit: 1 });
           if (allBooks.data.length > 0 && allBooks.data[0].isbn === book.isbn) {
             existingBook = allBooks.data[0];
-            console.log('✅ [ADD] Book already exists:', existingBook.id);
           }
         } catch (error) {
-          console.log('📝 [ADD] Book not found, will create new one');
+          // Book not found, will create new one
         }
       }
 
@@ -71,21 +64,17 @@ export default function AddView() {
         cover_url: book.cover_url,
       });
 
-      console.log('✅ [ADD] Using book:', targetBook.id);
-
       // 3. 읽기 로그 생성 (TO_READ 상태로)
-      const readingLog = await readingLogsApi.create({
+      await readingLogsApi.create({
         userId: userId!,
         bookId: targetBook.id,
         status: 'TO_READ',
       });
 
-      console.log('✅ [ADD] Reading log created:', readingLog);
-
       // 4. 책장 페이지로 이동
       router.push('/bookshelf');
     } catch (error: any) {
-      console.error('❌ [ADD] Failed to add book:', error);
+      console.error('Failed to add book:', error);
       const errorMessage = error?.message || '알 수 없는 오류가 발생했습니다.';
       alert(`책을 추가하는데 실패했습니다.\n오류: ${errorMessage}`);
     } finally {

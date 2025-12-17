@@ -18,9 +18,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
     let errorData: ApiError;
     try {
       errorData = await response.json();
-      console.error('❌ [API CLIENT] Error response:', errorData);
     } catch {
-      console.error('❌ [API CLIENT] Failed to parse error response');
       throw new ApiClientError(
         'An error occurred',
         response.status,
@@ -30,7 +28,6 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
     // Handle 401 Unauthorized - clear token and redirect to login
     if (response.status === 401) {
-      console.warn('⚠️ [API CLIENT] Unauthorized - clearing token');
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
         // Only redirect if not already on login page
@@ -83,71 +80,32 @@ export const apiClient = {
       });
     }
 
-    console.log('🌐 [API CLIENT] GET Request:', {
-      endpoint,
-      params,
-      fullUrl: url.toString(),
-    });
-
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: getAuthHeaders(),
     });
 
-    console.log('📡 [API CLIENT] Response:', {
-      status: response.status,
-      ok: response.ok,
-    });
-
-    const result = await handleResponse<T>(response);
-    console.log('✅ [API CLIENT] GET Result:', result);
-    return result;
+    return handleResponse<T>(response);
   },
 
   post: async <T>(endpoint: string, data?: any): Promise<T> => {
-    console.log('🌐 [API CLIENT] POST Request:', {
-      endpoint,
-      data,
-      fullUrl: `${API_URL}${endpoint}`,
-    });
-
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    console.log('📡 [API CLIENT] Response:', {
-      status: response.status,
-      ok: response.ok,
-    });
-
-    const result = await handleResponse<T>(response);
-    console.log('✅ [API CLIENT] POST Result:', result);
-    return result;
+    return handleResponse<T>(response);
   },
 
   patch: async <T>(endpoint: string, data?: any): Promise<T> => {
-    console.log('🌐 [API CLIENT] PATCH Request:', {
-      endpoint,
-      data,
-      fullUrl: `${API_URL}${endpoint}`,
-    });
-
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    console.log('📡 [API CLIENT] Response:', {
-      status: response.status,
-      ok: response.ok,
-    });
-
-    const result = await handleResponse<T>(response);
-    console.log('✅ [API CLIENT] PATCH Result:', result);
-    return result;
+    return handleResponse<T>(response);
   },
 
   delete: async <T>(endpoint: string): Promise<T> => {

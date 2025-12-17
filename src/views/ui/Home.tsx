@@ -20,7 +20,6 @@ export default function HomeView() {
 
   // Force refresh function
   const refreshData = () => {
-    console.log('🔄 [HOME] Manual refresh triggered');
     setRefreshKey(prev => prev + 1);
   };
   useEffect(() => {
@@ -32,8 +31,6 @@ export default function HomeView() {
       }
 
       try {
-        console.log('🔄 [HOME] Fetching data for userId:', userId);
-        
         const [currentBooks, currentGoal, recentAchievements, toReadBooks] = await Promise.all([
           readingLogsApi.getCurrent(userId),
           readingGoalsApi.getCurrent(userId),
@@ -41,26 +38,12 @@ export default function HomeView() {
           readingLogsApi.getToRead(userId),
         ]);
 
-        console.log('📚 [HOME] Current books:', currentBooks);
-        console.log('🎯 [HOME] Current goal:', currentGoal);
-        if (currentGoal) {
-          console.log('🎯 [HOME] Goal details:', {
-            period: currentGoal.period,
-            startDate: currentGoal.startDate,
-            endDate: currentGoal.endDate,
-            targetBooks: currentGoal.targetBooks,
-            progress: currentGoal.progress,
-          });
-        }
-        console.log('🏅 [HOME] Recent achievements:', recentAchievements);
-        console.log('📖 [HOME] To-read books:', toReadBooks);
-
         setCurrentBooks((currentBooks || []).slice(0, 3));
         setGoal(currentGoal || null);
         setAchievements(recentAchievements || []);
         setUpNext((toReadBooks || []).slice(0, 5));
       } catch (error) {
-        console.error('❌ [HOME] Failed to fetch data:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
@@ -75,7 +58,6 @@ export default function HomeView() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && userId && isAuthenticated) {
-        console.log('👁️ [HOME] Page visible, refreshing data...');
         refreshData();
       }
     };
@@ -114,8 +96,6 @@ export default function HomeView() {
     );
 
   }
-
-  console.log("goal",goal);
 
   const completedBooks = goal?.progress?.completedBooks || 0;
   const targetBooks = goal?.targetBooks || 0;
