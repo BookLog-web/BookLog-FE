@@ -28,6 +28,18 @@ async function handleResponse<T>(response: Response): Promise<T> {
       );
     }
 
+    // Handle 401 Unauthorized - clear token and redirect to login
+    if (response.status === 401) {
+      console.warn('⚠️ [API CLIENT] Unauthorized - clearing token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+        // Only redirect if not already on login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+      }
+    }
+
     throw new ApiClientError(
       errorData.message || 'An error occurred',
       errorData.statusCode || response.status,

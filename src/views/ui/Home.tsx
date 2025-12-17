@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HamburgerMenu, MainHeader } from '@/src/widgets';
+import { HamburgerMenu, MainHeader, Loading } from '@/src/widgets';
 import { BookCoverImage, ProgressBar, CircularProgress } from '@/src/entities';
 import { readingLogsApi, readingGoalsApi, achievementsApi } from '@/src/lib/api';
 import { useUser } from '@/src/lib/hooks/useUser';
@@ -43,6 +43,15 @@ export default function HomeView() {
 
         console.log('📚 [HOME] Current books:', currentBooks);
         console.log('🎯 [HOME] Current goal:', currentGoal);
+        if (currentGoal) {
+          console.log('🎯 [HOME] Goal details:', {
+            period: currentGoal.period,
+            startDate: currentGoal.startDate,
+            endDate: currentGoal.endDate,
+            targetBooks: currentGoal.targetBooks,
+            progress: currentGoal.progress,
+          });
+        }
         console.log('🏅 [HOME] Recent achievements:', recentAchievements);
         console.log('📖 [HOME] To-read books:', toReadBooks);
 
@@ -78,14 +87,7 @@ export default function HomeView() {
   }, [userId, isAuthenticated]);
 
   if (userLoading || loading) {
-    return (
-      <div className='bg-brown-20 flex min-h-screen items-center justify-center text-white'>
-        <div className='text-center'>
-          <div className='text-4xl mb-4'>📚</div>
-          <p className='text-lg'>로딩 중...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   // 로그인하지 않은 상태
@@ -119,6 +121,30 @@ export default function HomeView() {
   const targetBooks = goal?.targetBooks || 0;
   const currentYear = new Date().getFullYear();
 
+  const formatGoalPeriod = (g: ReadingGoalWithProgress): string => {
+    const start = new Date(g.startDate);
+    const end = new Date(g.endDate);
+    switch (g.period) {
+      case '올해':
+        return String(new Date().getFullYear());
+      case '이번 달': {
+        const month = start.getMonth() + 1;
+        return `${month}월`;
+      }
+      case '다음 3개월': {
+        const month = end.getMonth() + 1;
+        return `${month}월까지`;
+      }
+      default: {
+        const sMonth = start.getMonth() + 1;
+        const eMonth = end.getMonth() + 1;
+        return `${start.getFullYear()}.${sMonth}~${end.getFullYear()}.${eMonth}`;
+      }
+    }
+  };
+
+  const periodLabel = goal ? formatGoalPeriod(goal) : `${currentYear} 도전 과제`;
+
   return (
     <div className='bg-brown-20 relative flex min-h-screen text-white'>
       <HamburgerMenu />
@@ -135,9 +161,9 @@ export default function HomeView() {
 
           <section className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
             {currentBooks.length > 0 ? (
-              <div className='bg-brown-30 col-span-1 rounded-lg p-6 shadow-sm ring-1 ring-white/5 lg:col-span-2'>
+              <div className='bg-brown-30 col-span-1 rounded-lg p-6 shadow-sm ring-1 ring-white/5'>
                 <h2 className='t-xl-b text-white mb-4'>현재 읽는 중</h2>
-                <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
+                <div className='flex flex-col gap-4'>
                   {currentBooks.map((log) => (
                     <div key={log.id} className='flex gap-4 bg-brown-20 rounded-lg p-4'>
                       <BookCoverImage
@@ -172,7 +198,7 @@ export default function HomeView() {
                 </div>
               </div>
             ) : (
-              <div className='bg-brown-30 col-span-1 flex flex-col items-center justify-center gap-4 rounded-lg p-8 shadow-sm ring-1 ring-white/5 lg:col-span-2'>
+              <div className='bg-brown-30 col-span-1 flex flex-col items-center justify-center gap-4 rounded-lg p-8 shadow-sm ring-1 ring-white/5'>
                 <span className='text-5xl'>📖</span>
                 <p className='text-brown-90'>현재 읽고 있는 책이 없습니다</p>
                 <button className='btn bg-brown-40 hover:bg-brown-30 px-4 py-2 text-white' onClick={() => router.push('/add')}>
@@ -183,10 +209,10 @@ export default function HomeView() {
 
 
 
-            <div className='bg-brown-30 flex flex-col gap-4 rounded-lg p-4 shadow-sm ring-1 ring-white/5'>
+            <div className='bg-brown-30 flex flex-col gap-8 px-6 justify-between rounded-lg py-6 shadow-sm ring-1 ring-white/5'>
               <div className='space-y-1'>
                 <h3 className='text-xl leading-tight font-bold'>독서 목표</h3>
-                <p className='t-b-r text-brown-90'>{currentYear} 도전 과제</p>
+                <p className='t-b-r text-brown-90'>{periodLabel}</p>
               </div>
 
               {goal ? (
@@ -203,7 +229,7 @@ export default function HomeView() {
                   <button
                     type='button'
                     onClick={() => router.push('/goals')}
-                    className='btn bg-brown-40 hover:bg-brown-30 w-full px-4 py-2 text-white'
+                    className='rounded-xl bg-brown-40 hover:bg-brown-30 w-full px-4 py-4 text-white'
                   >
                     새 목표 설정
                   </button>
@@ -223,46 +249,7 @@ export default function HomeView() {
               )}
             </div>
 
-            <div className='bg-brown-30 flex flex-col gap-4 rounded-lg p-4 shadow-sm ring-1 ring-white/5'>
-              <div className='space-y-1'>
-                <h3 className='text-xl leading-tight font-bold'>
-                  최근 달성 배지
-                </h3>
-                <p className='t-b-r text-brown-90'>계속해서 읽어봐요!</p>
-              </div>
-
-              {achievements.length > 0 ? (
-                <>
-                  <div className='my-2 grid grid-cols-3 gap-4 sm:grid-cols-4'>
-                    {achievements.map(ach => (
-                      <div
-                        key={ach.id}
-                        className='flex flex-col items-center gap-2 text-center'
-                      >
-                        <div className='bg-brown-40 flex size-14 items-center justify-center rounded-full text-white'>
-                          <span className='material-symbols-outlined' aria-hidden>
-                            {ach.icon}
-                          </span>
-                        </div>
-                        <p className='t-s-m text-brown-90'>{ach.name}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    type='button'
-                    className='btn bg-brown-40 hover:bg-brown-30 w-full px-4 py-2 text-white'
-                  >
-                    모든 배지 보기
-                  </button>
-                </>
-              ) : (
-                <div className='flex flex-col items-center gap-4 py-8'>
-                  <span className='text-4xl'>🏅</span>
-                  <p className='text-brown-90'>아직 획득한 배지가 없습니다</p>
-                </div>
-              )}
-            </div>
+            
           </section>
 
           <section className='pb-6'>

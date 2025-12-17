@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HamburgerMenu } from '@/src/widgets';
+import { HamburgerMenu, Loading } from '@/src/widgets';
 import { booksApi, readingLogsApi } from '@/src/lib/api';
 import { useUser } from '@/src/lib/hooks/useUser';
 import type { NaverBook } from '@/src/types';
@@ -125,12 +125,7 @@ export default function AddView() {
           </div>
 
           {searching ? (
-            <div className='flex items-center justify-center py-12'>
-              <div className='text-center'>
-                <div className='text-4xl mb-4'>🔍</div>
-                <p className='text-lg text-brown-90'>검색 중...</p>
-              </div>
-            </div>
+            <Loading fullPage={false} message='검색 중...' />
           ) : hasSearched ? (
             searchResults.length > 0 ? (
               <div className='grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-6'>
@@ -187,4 +182,3 @@ export default function AddView() {
     </div>
   );
 }
-

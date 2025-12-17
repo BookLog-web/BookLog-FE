@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HamburgerMenu } from '@/src/widgets';
+import { HamburgerMenu, Loading } from '@/src/widgets';
 import { readingGoalsApi } from '@/src/lib/api';
 import { useUser } from '@/src/lib/hooks/useUser';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 const periods = ['올해', '이번 달', '다음 3개월', '직접 입력'];
 
 export default function GoalView() {
-  const { userId, user } = useUser();
+  const { userId, user, loading: userLoading, isAuthenticated } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -19,12 +19,25 @@ export default function GoalView() {
     targetPages: 1500,
   });
 
+  // Redirect to login if not authenticated after loading
+  if (!userLoading && !isAuthenticated) {
+    console.warn('⚠️ [GOAL] User not authenticated, redirecting to login');
+    router.push('/login');
+    return null;
+  }
+
+  // Show loading state while checking authentication
+  if (userLoading) {
+    return <Loading />;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!userId) {
+      console.error('❌ [GOAL] No userId available');
       alert('로그인이 필요합니다.');
-      window.location.href = '/login';
+      router.push('/login');
       return;
     }
 
@@ -95,32 +108,9 @@ export default function GoalView() {
     <div className='bg-brown-20 relative flex min-h-screen text-white'>
       <HamburgerMenu />
 
-      <main className='flex-1 overflow-y-auto px-6 py-8'>
+      <main className='w-full flex itemes-center justify-center py-26'>
         <div className='mx-auto flex max-w-3xl flex-col gap-10'>
-          <header className='border-brown-30 flex items-center justify-between border-b pb-5'>
-            <div className='flex items-center gap-3'>
-              <span className='text-brown-50' aria-hidden>
-                📚
-              </span>
-              <h1 className='text-xl font-bold'>북로그</h1>
-            </div>
-            <div className='flex items-center gap-3'>
-              <button
-                type='button'
-                className='bg-brown-30 flex h-10 w-10 items-center justify-center rounded-lg text-white'
-                aria-label='메뉴 열기'
-              >
-                ☰
-              </button>
-              <div
-                className='h-10 w-10 rounded-full bg-cover bg-center'
-                style={{
-                  backgroundImage: `url("${user?.avatar}")`,
-                }}
-                aria-label='사용자 아바타'
-              />
-            </div>
-          </header>
+          
 
           <div className='flex flex-col items-center gap-4 text-center'>
             <h2 className='t-4xl-eb'>나의 독서 목표 설정</h2>
@@ -200,4 +190,3 @@ export default function GoalView() {
     </div>
   );
 }
-

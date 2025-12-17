@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HamburgerMenu } from '@/src/widgets';
+import { HamburgerMenu, Loading } from '@/src/widgets';
 import { BookCard } from '@/src/entities';
 import { readingLogsApi } from '@/src/lib/api';
 import { useUser } from '@/src/lib/hooks/useUser';
@@ -86,14 +86,7 @@ export default function BookshelfView() {
   };
 
   if (loading && currentPage === 1) {
-    return (
-      <div className='bg-brown-20 flex min-h-screen items-center justify-center text-white'>
-        <div className='text-center'>
-          <div className='text-4xl mb-4'>📚</div>
-          <p className='text-lg'>로딩 중...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
